@@ -60,6 +60,12 @@ RPC request for call method *MyExampleHandler::pow*:
 }
 ```
 
+## Tests
+
+```Bash
+$ ./vendor/bin/phpunit -c ./
+```
+
 ## TODO
 
  - Add test on custom mappers
