@@ -1,8 +1,8 @@
 <?php
 
-namespace JsonRpc;
+namespace PhpJsonRpc;
 
-use JsonRpc\Server\GeneralMapper;
+use PhpJsonRpc\Server\GeneralMapper;
 
 class GeneralMapperTest extends \PHPUnit_Framework_TestCase
 {

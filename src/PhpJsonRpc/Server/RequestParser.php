@@ -1,13 +1,13 @@
 <?php
 
-namespace JsonRpc\Server;
+namespace PhpJsonRpc\Server;
 
-use JsonRpc\Core\Call\CallUnit;
-use JsonRpc\Core\Call\CallError;
-use JsonRpc\Core\Call\CallNotification;
-use JsonRpc\Core\CallSpecifier;
-use JsonRpc\Error\InvalidRequestException;
-use JsonRpc\Error\ParseErrorException;
+use PhpJsonRpc\Core\Call\CallUnit;
+use PhpJsonRpc\Core\Call\CallError;
+use PhpJsonRpc\Core\Call\CallNotification;
+use PhpJsonRpc\Core\CallSpecifier;
+use PhpJsonRpc\Error\InvalidRequestException;
+use PhpJsonRpc\Error\ParseErrorException;
 
 /**
  * Request parser

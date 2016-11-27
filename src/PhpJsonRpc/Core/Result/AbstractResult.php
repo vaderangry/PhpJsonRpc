@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonRpc\Core\Result;
+namespace PhpJsonRpc\Core\Result;
 
 abstract class AbstractResult
 {

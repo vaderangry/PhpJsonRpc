@@ -1,20 +1,20 @@
 <?php
 
-namespace JsonRpc\Server;
+namespace PhpJsonRpc\Server;
 
-use JsonRpc\Core\Call\CallUnit;
-use JsonRpc\Core\Call\CallError;
-use JsonRpc\Core\Call\CallNotification;
-use JsonRpc\Core\CallSpecifier;
-use JsonRpc\Core\Result\AbstractResult;
-use JsonRpc\Core\Result\ResultError;
-use JsonRpc\Core\Result\ResultNotification;
-use JsonRpc\Core\Result\ResultUnit;
-use JsonRpc\Core\ResultSpecifier;
-use JsonRpc\Error\InvalidParamsException;
-use JsonRpc\Error\JsonRpcException;
-use JsonRpc\Error\MethodNotFoundException;
-use JsonRpc\Error\ServerErrorException;
+use PhpJsonRpc\Core\Call\CallUnit;
+use PhpJsonRpc\Core\Call\CallError;
+use PhpJsonRpc\Core\Call\CallNotification;
+use PhpJsonRpc\Core\CallSpecifier;
+use PhpJsonRpc\Core\Result\AbstractResult;
+use PhpJsonRpc\Core\Result\ResultError;
+use PhpJsonRpc\Core\Result\ResultNotification;
+use PhpJsonRpc\Core\Result\ResultUnit;
+use PhpJsonRpc\Core\ResultSpecifier;
+use PhpJsonRpc\Error\InvalidParamsException;
+use PhpJsonRpc\Error\JsonRpcException;
+use PhpJsonRpc\Error\MethodNotFoundException;
+use PhpJsonRpc\Error\ServerErrorException;
 
 class Processor
 {

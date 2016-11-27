@@ -2,14 +2,14 @@
 
 <phpunit bootstrap="vendor/autoload.php" colors="true">
     <testsuites>
-        <testsuite name="JsonRpc Test Suite">
-            <directory>tests/JsonRpc/</directory>
+        <testsuite name="PhpJsonRpc Test Suite">
+            <directory>tests/PhpJsonRpc/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory suffix=".php">tests/JsonRpc/</directory>
+            <directory suffix=".php">tests/PhpJsonRpc/</directory>
         </whitelist>
     </filter>
 

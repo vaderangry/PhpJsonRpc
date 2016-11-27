@@ -1,8 +1,8 @@
 <?php
 
-namespace JsonRpc\Core;
+namespace PhpJsonRpc\Core;
 
-use JsonRpc\Core\Result\AbstractResult;
+use PhpJsonRpc\Core\Result\AbstractResult;
 
 class ResultSpecifier
 {

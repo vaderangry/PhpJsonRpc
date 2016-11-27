@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonRpc\Server;
+namespace PhpJsonRpc\Server;
 
 interface MapperInterface
 {

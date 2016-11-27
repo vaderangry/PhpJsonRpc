@@ -1,8 +1,8 @@
 <?php
 
-namespace JsonRpc\Core\Result;
+namespace PhpJsonRpc\Core\Result;
 
-use JsonRpc\Error\JsonRpcException;
+use PhpJsonRpc\Error\JsonRpcException;
 
 class ResultError extends AbstractResult
 {

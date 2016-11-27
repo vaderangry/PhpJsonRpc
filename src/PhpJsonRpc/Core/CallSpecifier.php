@@ -1,8 +1,8 @@
 <?php
 
-namespace JsonRpc\Core;
+namespace PhpJsonRpc\Core;
 
-use JsonRpc\Core\Call\AbstractCall;
+use PhpJsonRpc\Core\Call\AbstractCall;
 
 class CallSpecifier
 {

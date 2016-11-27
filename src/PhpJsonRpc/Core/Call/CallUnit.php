@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonRpc\Core\Call;
+namespace PhpJsonRpc\Core\Call;
 
 class CallUnit extends AbstractCall
 {

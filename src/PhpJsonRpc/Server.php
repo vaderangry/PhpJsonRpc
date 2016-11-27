@@ -1,11 +1,11 @@
 <?php
 
-namespace JsonRpc;
+namespace PhpJsonRpc;
 
-use JsonRpc\Server\Processor;
-use JsonRpc\Server\RequestParser;
-use JsonRpc\Server\ResponseBuilder;
-use JsonRpc\Server\MapperInterface;
+use PhpJsonRpc\Server\Processor;
+use PhpJsonRpc\Server\RequestParser;
+use PhpJsonRpc\Server\ResponseBuilder;
+use PhpJsonRpc\Server\MapperInterface;
 
 /**
  * Implementation of JSON-RPC2 specification
