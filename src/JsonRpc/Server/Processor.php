@@ -133,8 +133,7 @@ class Processor
     {
         foreach ($this->mappers as $mapper) {
             /** @var MapperInterface $mapper */
-            $class  = $mapper->getHandlerClass($requestedMethod);
-            $method = $mapper->getHandlerMethod($requestedMethod);
+            list($class, $method)  = $mapper->getClassAndMethod($requestedMethod);
 
             if ($class && array_key_exists($class, $this->handlers) && method_exists($this->handlers[$class], $method)) {
                 return [$class, $method];

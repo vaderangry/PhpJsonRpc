@@ -2,6 +2,8 @@
 
 namespace JsonRpc;
 
+use JsonRpc\Server\MapperInterface;
+
 class HandlerExampleAlpha
 {
     /**
@@ -43,6 +45,42 @@ class HandlerExampleOmega
     }
 }
 
+class UserExample
+{
+    /**
+     * @return int ID of created user
+     */
+    public function create()
+    {
+        return 256;
+    }
+
+    /**
+     * @return bool
+     */
+    public function block()
+    {
+        return true;
+    }
+}
+
+class CustomMapper implements MapperInterface
+{
+    public function getClassAndMethod(string $requestedMethod): array
+    {
+        $map = [
+            'User.Profile.create' => [UserExample::class, 'create'],
+            'User.Profile.block'  => [UserExample::class, 'block']
+        ];
+
+        if (array_key_exists($requestedMethod, $map)) {
+            return $map[$requestedMethod];
+        }
+
+        return ['', ''];
+    }
+}
+
 class ServerTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
@@ -50,12 +88,14 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider requestsProvider
+     * General test of default configuration
+     *
+     * @dataProvider generalRequestsProvider
      *
      * @param string $request
      * @param string $expectedResponse
      */
-    public function testExecute($request, $expectedResponse)
+    public function testExecute(string $request, string $expectedResponse)
     {
         $server = new Server($request);
 
@@ -67,7 +107,29 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResponse, $response);
     }
 
-    public function requestsProvider()
+    /**
+     * Testing of custom mapper
+     *
+     * @dataProvider mapperRequestsProvider
+     *
+     * @param string $request
+     * @param string $expectedResponse
+     */
+    public function testCustomMapper(string $request, string $expectedResponse)
+    {
+        $server = new Server($request);
+
+        $response = $server
+            ->addMapper(new CustomMapper())
+            ->addHandler(new HandlerExampleAlpha())
+            ->addHandler(new HandlerExampleOmega())
+            ->addHandler(new UserExample())
+            ->execute();
+
+        $this->assertEquals($expectedResponse, $response);
+    }
+
+    public function generalRequestsProvider()
     {
         return [
             // #0 Rpc call with positional parameters
@@ -164,6 +226,24 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                     '{"jsonrpc": "2.0", "method": "JsonRpc.HandlerExampleOmega.pow", "params": [7,3]}' .
                 ']',
                 ''
+            ]
+        ];
+    }
+
+    public function mapperRequestsProvider()
+    {
+        return [
+            [
+                '{"jsonrpc": "2.0", "method": "User.Profile.create", "id": 10}',
+                '{"jsonrpc":"2.0","result":256,"id":10}'
+            ],
+            [
+                '{"jsonrpc": "2.0", "method": "JsonRpc.HandlerExampleAlpha.add", "params": [16, 32], "id": 20}',
+                '{"jsonrpc":"2.0","result":48,"id":20}'
+            ],
+            [
+                '{"jsonrpc": "2.0", "method": "User.Profile.block", "id": 30}',
+                '{"jsonrpc":"2.0","result":true,"id":30}'
             ]
         ];
     }

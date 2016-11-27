@@ -10,10 +10,9 @@ JSON-RPC2 implementation for PHP7.
 
 ### Class binding
 
-1. Create or take your exists class-handler.
-2. Create instance of **Server**.
-3. Add class-handler to server.
-4. Run server.
+1. Create instance of **Server**.
+2. Add class-handler to server.
+3. Run server.
 
 File **MyExampleHandler.php**:
 ```php
@@ -35,7 +34,7 @@ class MyExampleHandler
 }
 ```
 
-File **MyServer.php** (your Controller-like end-point):
+File **MyServer.php** (entry point for all requests):
 ```php
 <?php
 
@@ -60,6 +59,46 @@ RPC request for call method *MyExampleHandler::pow*:
 }
 ```
 
+### Custom routing
+
+File *MyCustomerMapper.php*:
+```php
+<?php
+class MyCustomMapper implements MapperInterface
+{
+    public function getClassAndMethod(string $requestedMethod): array
+    {
+        // Keys of array presents requested method
+        $map = [
+            'User.Profile.create' => [UserExample::class, 'create'],
+            'User.Profile.block'  => [UserExample::class, 'block']
+        ];
+
+        if (array_key_exists($requestedMethod, $map)) {
+            return $map[$requestedMethod];
+        }
+
+        return ['', ''];
+    }
+}
+```
+
+File **MyServer.php**:
+```php
+<?php
+
+use Handler\MyExampleHandler;
+
+$server = new Server($request);
+
+$response = $server
+    ->addMapper(new MyCustomMapper())
+    ->addHandler(new UserExample())
+    ->execute();
+
+echo $response;
+```
+
 ## Tests
 
 ```Bash
@@ -68,7 +107,6 @@ $ ./vendor/bin/phpunit -c ./
 
 ## TODO
 
- - Add test on custom mappers
  - Check comments and improve docs
  - Add support user-defined classes (type-matching)
  - Add user-defined routes for class-handlers

@@ -5,18 +5,10 @@ namespace JsonRpc\Server;
 interface MapperInterface
 {
     /**
-     * Get class name from request method
+     * Get tuple of class and method
      *
      * @param string $requestedMethod
-     * @return string
+     * @return array Tuple [class, method] 
      */
-    public function getHandlerClass(string $requestedMethod): string;
-
-    /**
-     * Get method name from request method 
-     *
-     * @param string $requestedMethod
-     * @return string
-     */
-    public function getHandlerMethod(string $requestedMethod): string;
+    public function getClassAndMethod(string $requestedMethod): array;
 }

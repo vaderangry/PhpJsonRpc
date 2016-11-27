@@ -34,7 +34,7 @@ class RequestParser
         // Single request
         if ($this->isSingleRequest($payload)) {
             if ($this->isValidCall($payload)) {
-                $units[] = new CallUnit($payload['id'], $payload['method'], $payload['params']);
+                $units[] = new CallUnit($payload['id'], $payload['method'], $payload['params'] ?? []);
             } elseif ($this->isValidNotification($payload)) {
                 $units[] = new CallNotification($payload['method'], $payload['params']);
             } else {
