@@ -1,13 +1,13 @@
 <?php
 
-namespace Vaderangry\PhpJsonRpc\Server;
+namespace PhpJsonRpc\Server;
 
-use Vaderangry\PhpJsonRpc\Core\Call\CallUnit;
-use Vaderangry\PhpJsonRpc\Core\Call\CallError;
-use Vaderangry\PhpJsonRpc\Core\Call\CallNotification;
-use Vaderangry\PhpJsonRpc\Core\CallSpecifier;
-use Vaderangry\PhpJsonRpc\Error\InvalidRequestException;
-use Vaderangry\PhpJsonRpc\Error\ParseErrorException;
+use PhpJsonRpc\Core\Call\CallUnit;
+use PhpJsonRpc\Core\Call\CallError;
+use PhpJsonRpc\Core\Call\CallNotification;
+use PhpJsonRpc\Core\CallSpecifier;
+use PhpJsonRpc\Error\InvalidRequestException;
+use PhpJsonRpc\Error\ParseErrorException;
 
 /**
  * Request parser

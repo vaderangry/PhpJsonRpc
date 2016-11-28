@@ -1,8 +1,8 @@
 <?php
 
-namespace Vaderangry\PhpJsonRpc\Tests;
+namespace PhpJsonRpc\Tests;
 
-use Vaderangry\PhpJsonRpc\Server\GeneralMapper;
+use PhpJsonRpc\Server\GeneralMapper;
 
 class GeneralMapperTest extends \PHPUnit_Framework_TestCase
 {

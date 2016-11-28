@@ -1,6 +1,6 @@
 <?php
 
-namespace Vaderangry\PhpJsonRpc\Error;
+namespace PhpJsonRpc\Error;
 
 class InvalidParamsException extends JsonRpcException
 {

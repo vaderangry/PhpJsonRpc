@@ -1,6 +1,6 @@
 <?php
 
-namespace Vaderangry\PhpJsonRpc\Core\Call;
+namespace PhpJsonRpc\Core\Call;
 
 abstract class AbstractCall
 {

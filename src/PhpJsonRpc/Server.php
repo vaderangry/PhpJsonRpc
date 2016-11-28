@@ -1,11 +1,11 @@
 <?php
 
-namespace Vaderangry\PhpJsonRpc;
+namespace PhpJsonRpc;
 
-use Vaderangry\PhpJsonRpc\Server\Processor;
-use Vaderangry\PhpJsonRpc\Server\RequestParser;
-use Vaderangry\PhpJsonRpc\Server\ResponseBuilder;
-use Vaderangry\PhpJsonRpc\Server\MapperInterface;
+use PhpJsonRpc\Server\Processor;
+use PhpJsonRpc\Server\RequestParser;
+use PhpJsonRpc\Server\ResponseBuilder;
+use PhpJsonRpc\Server\MapperInterface;
 
 /**
  * Implementation of JSON-RPC2 specification

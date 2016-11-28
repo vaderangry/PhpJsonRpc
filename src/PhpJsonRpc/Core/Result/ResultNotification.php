@@ -1,6 +1,6 @@
 <?php
 
-namespace Vaderangry\PhpJsonRpc\Core\Result;
+namespace PhpJsonRpc\Core\Result;
 
 class ResultNotification extends AbstractResult
 {
