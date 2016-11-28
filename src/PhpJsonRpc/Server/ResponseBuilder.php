@@ -62,14 +62,26 @@ class ResponseBuilder
     private function getErrorMessage(int $code): string
     {
         switch ($code) {
-            case JsonRpcException::PARSE_ERROR:      return 'Parse error';
-            case JsonRpcException::INVALID_REQUEST:  return 'Invalid Request';
-            case JsonRpcException::METHOD_NOT_FOUND: return 'Method not found';
-            case JsonRpcException::INVALID_PARAMS:   return 'Invalid params';
-            case JsonRpcException::INTERNAL_ERROR:   return 'Internal error';
-            case JsonRpcException::SERVER_ERROR:     return 'Server Error';
-        }
+            case JsonRpcException::PARSE_ERROR:
+                return 'Parse error';
 
-        return 'Internal error';
+            case JsonRpcException::INVALID_REQUEST:
+                return 'Invalid Request';
+
+            case JsonRpcException::METHOD_NOT_FOUND:
+                return 'Method not found';
+
+            case JsonRpcException::INVALID_PARAMS:
+                return 'Invalid params';
+
+            case JsonRpcException::INTERNAL_ERROR:
+                return 'Internal error';
+
+            case JsonRpcException::SERVER_ERROR:
+                return 'Server Error';
+
+            default:
+                return 'Internal error';
+        }
     }
 }
