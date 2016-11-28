@@ -1,9 +1,9 @@
 {
   "name": "vaderangry/PhpJsonRpc",
-  "autoload": {
-    "psr-4": { "PhpJsonRpc\\": "src/PhpJsonRpc" }
-  },
   "require-dev": {
     "phpunit/phpunit": "5.5.*"
+  },
+  "autoload": {
+    "psr-4": { "Vaderangry\\PhpJsonRpc\\": "src/PhpJsonRpc" }
   }
 }

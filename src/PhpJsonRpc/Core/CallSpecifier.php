@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpJsonRpc\Core;
+namespace Vaderangry\PhpJsonRpc\Core;
 
-use PhpJsonRpc\Core\Call\AbstractCall;
+use Vaderangry\PhpJsonRpc\Core\Call\AbstractCall;
 
 class CallSpecifier
 {

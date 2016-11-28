@@ -1,12 +1,12 @@
 <?php
 
-namespace PhpJsonRpc\Server;
+namespace Vaderangry\PhpJsonRpc\Server;
 
-use PhpJsonRpc\Core\Result\AbstractResult;
-use PhpJsonRpc\Core\Result\ResultError;
-use PhpJsonRpc\Core\Result\ResultUnit;
-use PhpJsonRpc\Core\ResultSpecifier;
-use PhpJsonRpc\Error\JsonRpcException;
+use Vaderangry\PhpJsonRpc\Core\Result\AbstractResult;
+use Vaderangry\PhpJsonRpc\Core\Result\ResultError;
+use Vaderangry\PhpJsonRpc\Core\Result\ResultUnit;
+use Vaderangry\PhpJsonRpc\Core\ResultSpecifier;
+use Vaderangry\PhpJsonRpc\Error\JsonRpcException;
 
 class ResponseBuilder
 {

@@ -1,20 +1,20 @@
 <?php
 
-namespace PhpJsonRpc\Server;
+namespace Vaderangry\PhpJsonRpc\Server;
 
-use PhpJsonRpc\Core\Call\CallUnit;
-use PhpJsonRpc\Core\Call\CallError;
-use PhpJsonRpc\Core\Call\CallNotification;
-use PhpJsonRpc\Core\CallSpecifier;
-use PhpJsonRpc\Core\Result\AbstractResult;
-use PhpJsonRpc\Core\Result\ResultError;
-use PhpJsonRpc\Core\Result\ResultNotification;
-use PhpJsonRpc\Core\Result\ResultUnit;
-use PhpJsonRpc\Core\ResultSpecifier;
-use PhpJsonRpc\Error\InvalidParamsException;
-use PhpJsonRpc\Error\JsonRpcException;
-use PhpJsonRpc\Error\MethodNotFoundException;
-use PhpJsonRpc\Error\ServerErrorException;
+use Vaderangry\PhpJsonRpc\Core\Call\CallUnit;
+use Vaderangry\PhpJsonRpc\Core\Call\CallError;
+use Vaderangry\PhpJsonRpc\Core\Call\CallNotification;
+use Vaderangry\PhpJsonRpc\Core\CallSpecifier;
+use Vaderangry\PhpJsonRpc\Core\Result\AbstractResult;
+use Vaderangry\PhpJsonRpc\Core\Result\ResultError;
+use Vaderangry\PhpJsonRpc\Core\Result\ResultNotification;
+use Vaderangry\PhpJsonRpc\Core\Result\ResultUnit;
+use Vaderangry\PhpJsonRpc\Core\ResultSpecifier;
+use Vaderangry\PhpJsonRpc\Error\InvalidParamsException;
+use Vaderangry\PhpJsonRpc\Error\JsonRpcException;
+use Vaderangry\PhpJsonRpc\Error\MethodNotFoundException;
+use Vaderangry\PhpJsonRpc\Error\ServerErrorException;
 
 class Processor
 {
