@@ -2,6 +2,8 @@
 
 JSON-RPC2 implementation for PHP7.
 
+[![Build Status](https://travis-ci.org/vaderangry/PhpJsonRpc.svg?branch=master)](https://travis-ci.org/vaderangry/PhpJsonRpc)
+
 ## Installation
 
 Open a command console, enter your project directory and execute the following command to download the latest stable version of this bundle:
