@@ -1,8 +1,16 @@
-# JsonRpc
+# PhpJsonRpc
 
-JSON-RPC2 implementation for PHP7.
+[JSON-RPC2](http://www.jsonrpc.org/specification) implementation for PHP7.
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/vaderangry/PhpJsonRpc/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/vaderangry/PhpJsonRpc/?branch=master)
 [![Build Status](https://travis-ci.org/vaderangry/PhpJsonRpc.svg?branch=master)](https://travis-ci.org/vaderangry/PhpJsonRpc)
+
+## Features
+
+ - JSON-RPC 2.0 full conformance​.
+ - Fast start with default routing based on php namespaces.
+ - Flexible custom routing for your requirements.
+ - Fully unit tested.
 
 ## Installation
 
@@ -16,11 +24,11 @@ This command requires you to have Composer installed globally, as explained in t
 
 ## Usage
 
-### Class binding
-
 1. Create instance of **Server**.
 2. Add class-handler to server.
 3. Run server.
+
+### Examples
 
 File **MyExampleHandler.php**:
 ```php
@@ -28,7 +36,7 @@ File **MyExampleHandler.php**:
 
 namespace Handler;
 
-class MyExampleHandler
+class MyHandler
 {
     /**
      * @param float $base
@@ -46,22 +54,22 @@ File **MyServer.php** (entry point for all requests):
 ```php
 <?php
 
-use Handler\MyExampleHandler;
+use Handler\MyHandler;
 
 $server = new Server($request);
 
 $response = $server
-    ->addHandler(new MyExampleHandler())
+    ->addHandler(new MyHandler())
     ->execute();
 
 echo $response;
 ```
 
-RPC request for call method *MyExampleHandler::pow*:
+RPC request for call method *MyHandler::pow*:
 ```JSON
 {
   "jsonrpc": "2.0",
-  "method": "Handler.MyExampleHandler.pow",
+  "method": "Handler.MyHandler.pow",
   "params": {"base": 3, "exp": 7},
   "id": 1
 }
@@ -69,10 +77,10 @@ RPC request for call method *MyExampleHandler::pow*:
 
 ### Custom routing
 
-File *MyCustomerMapper.php*:
+File *MyMapper.php*:
 ```php
 <?php
-class MyCustomMapper implements MapperInterface
+class MyMapper implements MapperInterface
 {
     public function getClassAndMethod(string $requestedMethod): array
     {
@@ -95,12 +103,12 @@ File **MyServer.php**:
 ```php
 <?php
 
-use Handler\MyExampleHandler;
+use Handler\MyHandler;
 
 $server = new Server($request);
 
 $response = $server
-    ->addMapper(new MyCustomMapper())
+    ->addMapper(new MyMapper())
     ->addHandler(new UserExample())
     ->execute();
 
@@ -115,7 +123,6 @@ $ ./vendor/bin/phpunit -c ./
 
 ## TODO
 
- - Check comments and improve docs
+ - Add comments
  - Add support user-defined classes (type-matching)
- - Add user-defined routes for class-handlers
  - Add JSON-RPC2 Client
