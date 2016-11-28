@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpJsonRpc\Core\Call;
+namespace Vaderangry\PhpJsonRpc\Core\Call;
 
 class CallNotification extends AbstractCall
 {

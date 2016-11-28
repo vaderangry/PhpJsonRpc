@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpJsonRpc\Server;
+namespace Vaderangry\PhpJsonRpc\Server;
 
 class GeneralMapper implements MapperInterface
 {

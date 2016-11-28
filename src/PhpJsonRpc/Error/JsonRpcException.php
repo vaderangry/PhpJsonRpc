@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpJsonRpc\Error;
+namespace Vaderangry\PhpJsonRpc\Error;
 
 abstract class JsonRpcException extends \Exception
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpJsonRpc\Core\Call;
+namespace Vaderangry\PhpJsonRpc\Core\Call;
 
-use PhpJsonRpc\Error\JsonRpcException;
+use Vaderangry\PhpJsonRpc\Error\JsonRpcException;
 
 class CallError extends AbstractCall
 {
