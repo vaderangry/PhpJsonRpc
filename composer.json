@@ -1,5 +1,19 @@
 {
-  "name": "vaderangry/PhpJsonRpc",
+  "name": "vaderangry/php-json-rpc",
+  "type": "library",
+  "description": "JSON-RPC2 implementation for PHP7",
+  "keywords": ["json-rpc"],
+  "homepage": "https://github.com/vaderangry/PhpJsonRpc",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vaderangry",
+      "email": "vaderangry@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0"
+  },
   "require-dev": {
     "phpunit/phpunit": "5.5.*"
   },
