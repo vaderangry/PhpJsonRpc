@@ -7,6 +7,11 @@ use PhpJsonRpc\Error\JsonRpcException;
 class ResultError extends AbstractResult
 {
     /**
+     * @var mixed
+     */
+    private $id;
+
+    /**
      * @var JsonRpcException
      */
     private $baseException;
@@ -14,11 +19,21 @@ class ResultError extends AbstractResult
     /**
      * ErrorUnit constructor.
      *
+     * @param mixed               $id
      * @param JsonRpcException $baseException
      */
-    public function __construct(JsonRpcException $baseException)
+    public function __construct($id, JsonRpcException $baseException)
     {
+        $this->id            = $id;
         $this->baseException = $baseException;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

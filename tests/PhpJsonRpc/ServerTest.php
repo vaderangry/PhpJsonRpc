@@ -151,7 +151,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             // #3 Rpc call with invalid parameters (invalid params)
             [
                 '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.HandlerExampleAlpha.add", "params": {"lhs": 2, "rhs": "bad"}, "id": 30}',
-                '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid params","data":{"code":0,"message":"Match type failed"}},"id":null}'
+                '{"jsonrpc":"2.0","error":{"code":-32602,"message":"Invalid params","data":{"code":0,"message":"Match type failed"}},"id":30}'
             ],
             // #4 Rpc call with invalid JSON (parse error)
             [
@@ -161,12 +161,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             // #5 Rpc call non-existent class (method not found)
             [
                 '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.TestBetaHandler.add", "params": {"lhs": 2, "rhs": 3}, "id": 50}',
-                '{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found","data":{"code":0,"message":""}},"id":null}'
+                '{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found","data":{"code":0,"message":""}},"id":50}'
             ],
             // #6 Rpc call non-existent method (method not found)
             [
                 '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.HandlerExampleAlpha.division", "params": {"lhs": 2, "rhs": 16}, "id": 60}',
-                '{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found","data":{"code":0,"message":""}},"id":null}'
+                '{"jsonrpc":"2.0","error":{"code":-32601,"message":"Method not found","data":{"code":0,"message":""}},"id":60}'
             ],
             // #7 Rpc call with invalid Request object (invalid request)
             [
@@ -181,7 +181,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
             // #9 Rpc call with server error (server error)
             [
                 '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.HandlerExampleAlpha.error", "params": [], "id": 90}',
-                '{"jsonrpc":"2.0","error":{"code":-32000,"message":"Server Error","data":{"code":999,"message":"Internal error"}},"id":null}'
+                '{"jsonrpc":"2.0","error":{"code":-32000,"message":"Server Error","data":{"code":999,"message":"Internal error"}},"id":90}'
             ],
             // #10 Batch request
             [
@@ -198,7 +198,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                     '{"jsonrpc":"2.0","result":343,"id":"102"},' .
                     '{"jsonrpc":"2.0","error":{"code":-32600,"message":"Invalid Request","data":{"code":0,"message":""}},"id":null},' .
                     '{"jsonrpc":"2.0","result":2187,"id":"105"},' .
-                    '{"jsonrpc":"2.0","error":{"code":-32000,"message":"Server Error","data":{"code":999,"message":"Internal error"}},"id":null}' .
+                    '{"jsonrpc":"2.0","error":{"code":-32000,"message":"Server Error","data":{"code":999,"message":"Internal error"}},"id":"106"}' .
                 ']'
             ],
             // # 11 Rpc call with invalid batch

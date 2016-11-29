@@ -39,7 +39,7 @@ class ResponseBuilder
                         'message' => $this->getErrorMessage($baseException->getJsonRpcCode()),
                         'data'    => $baseException->getJsonRpcData()
                     ],
-                    'id' => null
+                    'id' => $unit->getId()
                 ];
             }
         }

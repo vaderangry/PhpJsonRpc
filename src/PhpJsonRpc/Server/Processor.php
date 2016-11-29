@@ -93,7 +93,7 @@ class Processor
             list($class, $method) = $this->getClassAndMethod($unit->getRawMethod());
             $result = $this->invoke($class, $method, $unit->getRawParams());
         } catch (JsonRpcException $exception) {
-            return new ResultError($exception);
+            return new ResultError($unit->getRawId(), $exception);
         }
 
         return new ResultUnit($unit->getRawId(), $result);
@@ -109,7 +109,7 @@ class Processor
             list($class, $method) = $this->getClassAndMethod($unit->getRawMethod());
             $this->invoke($class, $method, $unit->getRawParams());
         } catch (JsonRpcException $exception) {
-            return new ResultError($exception);
+            return new ResultError(null, $exception);
         }
 
         return new ResultNotification();
@@ -121,7 +121,7 @@ class Processor
      */
     private function handleErrorUnit(CallError $unit): AbstractResult
     {
-        return new ResultError($unit->getBaseException());
+        return new ResultError(null, $unit->getBaseException());
     }
 
     /**
