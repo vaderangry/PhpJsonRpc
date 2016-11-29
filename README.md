@@ -7,7 +7,7 @@
 
 ## Features
 
- - JSON-RPC 2.0 full conformance​.
+ - JSON-RPC 2.0 full conformance (batch requests, notification, etc)​.
  - Fast start with default routing based on php namespaces.
  - Flexible custom routing for your requirements.
  - Fully unit tested.
@@ -123,6 +123,5 @@ $ ./vendor/bin/phpunit -c ./
 
 ## TODO
 
- - Add comments
+ - Improve docs and comments
  - Add support user-defined classes (type-matching)
- - Add JSON-RPC2 Client
