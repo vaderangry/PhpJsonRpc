@@ -1,13 +1,13 @@
 # PhpJsonRpc
 
-[JSON-RPC2](http://www.jsonrpc.org/specification) implementation for PHP7.
+[JSON-RPC2](http://www.jsonrpc.org/specification) server and client implementation for PHP7.
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/vaderangry/PhpJsonRpc/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/vaderangry/PhpJsonRpc/?branch=master)
 [![Build Status](https://travis-ci.org/vaderangry/PhpJsonRpc.svg?branch=master)](https://travis-ci.org/vaderangry/PhpJsonRpc)
 
 ## Features
 
- - JSON-RPC 2.0 full conformance (batch requests, notification, etc)​.
+ - JSON-RPC 2.0 full conformance (batch requests, notification, positional and named arguments, etc)​.
  - Fast start with default routing based on php namespaces.
  - Flexible custom routing for your requirements.
  - Fully unit tested.
@@ -22,27 +22,17 @@ $ composer require vaderangry/php-json-rpc
 
 This command requires you to have Composer installed globally, as explained in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-## Usage
+## Server
+### Basic usage
 
-1. Create instance of **Server**.
-2. Add class-handler to server.
-3. Run server.
-
-### Examples
-
-File **MyExampleHandler.php**:
+File **Math.php** contains class for which provide JSON-RPC2 API:
 ```php
 <?php
 
-namespace Handler;
+namespace Util;
 
-class MyHandler
+class Math
 {
-    /**
-     * @param float $base
-     * @param int $exp
-     * @return float
-     */
     public function pow(float $base, int $exp): float
     {
         return pow($base, $exp);
@@ -50,44 +40,48 @@ class MyHandler
 }
 ```
 
-File **MyServer.php** (entry point for all requests):
+File **Server.php** - entry point for all requests:
 ```php
 <?php
 
-use Handler\MyHandler;
+use PhpJsonRpc\Server;
+use Util\Math;
 
 $server = new Server($request);
 
 $response = $server
-    ->addHandler(new MyHandler())
+    ->addHandler(new Math())
     ->execute();
 
 echo $response;
 ```
 
-RPC request for call method *MyHandler::pow*:
-```JSON
+Method `Util\Math::pow` by default will mapped to method `Util.Math.pow` in JSON-RPC2 terms. Request example:
+```json
 {
-  "jsonrpc": "2.0",
-  "method": "Handler.MyHandler.pow",
-  "params": {"base": 3, "exp": 7},
+  "jsonrpc": "2.0", 
+  "method": "Util.Math.pow", 
+  "params": {"base": 2, "exp": 3}, 
   "id": 1
 }
 ```
 
-### Custom routing
+### Custom method mapping
 
-File *MyMapper.php*:
+File *Mapper.php*:
 ```php
 <?php
-class MyMapper implements MapperInterface
+
+use JsonRpc\Server\MapperInterface;
+use Util\Math;
+
+class Mapper implements MapperInterface
 {
     public function getClassAndMethod(string $requestedMethod): array
     {
         // Keys of array presents requested method
         $map = [
-            'User.Profile.create' => [UserExample::class, 'create'],
-            'User.Profile.block'  => [UserExample::class, 'block']
+            'pow' => [Math::class, 'pow'],
         ];
 
         if (array_key_exists($requestedMethod, $map)) {
@@ -99,21 +93,63 @@ class MyMapper implements MapperInterface
 }
 ```
 
-File **MyServer.php**:
+File **Server.php**:
 ```php
 <?php
 
-use Handler\MyHandler;
+use PhphJsonRpc\Server;
+use Util\Math;
 
 $server = new Server($request);
 
 $response = $server
-    ->addMapper(new MyMapper())
-    ->addHandler(new UserExample())
+    ->addMapper(new Mapper())
+    ->addHandler(new Math())
     ->execute();
 
 echo $response;
 ```
+
+Now `Util\Math::pow` will be mapped to `pow`. Request example:
+```json
+{
+  "jsonrpc": "2.0", 
+  "method": "pow", 
+  "params": {"base": 2, "exp": 3}, 
+  "id": 1
+}
+```
+
+## Client
+
+### Basic usage
+
+Single request:
+```php
+<?php
+
+use PhphJsonRpc\Client;
+
+$client = new Client('http://localhost');
+$result = $client->call('Math.pow', [2, 3]); // $result = 8
+```
+
+Batch request:
+```php
+<?php
+
+use PhphJsonRpc\Client;
+
+$client = new Client('http://localhost')
+
+$result = $client->batch()
+    ->call('Util.Math.pow', [2, 1])
+    ->call('Util.Math.pow', [2, 2])
+    ->call('Util.Math.pow', [2, 3])
+    ->batchExecute();
+// $result = [2, 4, 8]
+```
+All unit of result stored at the same position of call. Server error present `null` object.
 
 ## Tests
 
@@ -122,6 +158,5 @@ $ ./vendor/bin/phpunit -c ./
 ```
 
 ## TODO
-
- - Improve docs and comments
+ - Improve docs (custom transport, id generator, core concepts, configuration)
  - Add support user-defined classes (type-matching)
