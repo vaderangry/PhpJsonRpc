@@ -2,7 +2,7 @@
 
 namespace PhpJsonRpc\Core\Result;
 
-class ResultUnit extends AbstractResult
+class Result extends AbstractResult
 {
     /**
      * @var mixed

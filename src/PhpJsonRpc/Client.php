@@ -4,23 +4,28 @@ namespace PhpJsonRpc;
 
 use PhpJsonRpc\Client\IdGenerator;
 use PhpJsonRpc\Client\IdGeneratorInterface;
-use PhpJsonRpc\Core\Result\ResultError;
+use PhpJsonRpc\Core\Result\Error;
 use PhpJsonRpc\Error\InvalidResponseException;
 use PhpJsonRpc\Client\HttpTransport;
-use PhpJsonRpc\Client\TransportInterface;
+use PhpJsonRpc\Client\AbstractTransport;
 use PhpJsonRpc\Client\RequestBuilder;
 use PhpJsonRpc\Client\ResponseParser;
-use PhpJsonRpc\Core\Call\AbstractCall;
-use PhpJsonRpc\Core\Call\CallNotification;
-use PhpJsonRpc\Core\Call\CallUnit;
-use PhpJsonRpc\Core\CallSpecifier;
-use PhpJsonRpc\Core\Result\ResultUnit;
-use PhpJsonRpc\Core\ResultSpecifier;
+use PhpJsonRpc\Core\Invoke\AbstractInvoke;
+use PhpJsonRpc\Core\Invoke\Notification;
+use PhpJsonRpc\Core\Invoke\Invoke;
+use PhpJsonRpc\Core\InvokeSpec;
+use PhpJsonRpc\Core\Result\Result;
+use PhpJsonRpc\Core\ResultSpec;
 
+/**
+ * Implementation of JSON-RPC2 client specification
+ *
+ * @link http://www.jsonrpc.org/specification
+ */
 class Client
 {
     /**
-     * @var AbstractCall[]
+     * @var AbstractInvoke[]
      */
     private $units = [];
 
@@ -35,9 +40,9 @@ class Client
     private $requestBuilder;
 
     /**
-     * @var TransportInterface
+     * @var AbstractTransport
      */
-    private $engine;
+    private $transport;
 
     /**
      * @var ResponseParser
@@ -57,19 +62,59 @@ class Client
     public function __construct(string $url)
     {
         $this->requestBuilder = new RequestBuilder();
-        $this->engine         = new HttpTransport($url);
+        $this->transport      = new HttpTransport($url);
         $this->responseParser = new ResponseParser();
         $this->generatorId    = new IdGenerator();
     }
 
     /**
+     * @return RequestBuilder
+     */
+    public function getRequestBuilder(): RequestBuilder
+    {
+        return $this->requestBuilder;
+    }
+
+    /**
+     * @return AbstractTransport
+     */
+    public function getTransport(): AbstractTransport
+    {
+        return $this->transport;
+    }
+
+    /**
      * Set transport engine
      *
-     * @param TransportInterface $engine
+     * @param AbstractTransport $transport
      */
-    public function setTransport(TransportInterface $engine)
+    public function setTransport(AbstractTransport $transport)
     {
-        $this->engine = $engine;
+        $this->transport = $transport;
+    }
+
+    /**
+     * @return ResponseParser
+     */
+    public function getResponseParser()
+    {
+        return $this->responseParser;
+    }
+
+    /**
+     * @param ResponseParser $responseParser
+     */
+    public function setResponseParser($responseParser)
+    {
+        $this->responseParser = $responseParser;
+    }
+
+    /**
+     * @return IdGeneratorInterface
+     */
+    public function getGeneratorId(): IdGeneratorInterface
+    {
+        return $this->generatorId;
     }
 
     /**
@@ -90,10 +135,10 @@ class Client
      */
     public function call(string $method, array $parameters)
     {
-        $this->units[] = new CallUnit($this->generatorId->get(), $method, $parameters);
+        $this->units[] = new Invoke($this->generatorId->get(), $method, $parameters);
 
         if ($this->isSingleRequest) {
-            $resultSpecifier = $this->execute(new CallSpecifier($this->units, true));
+            $resultSpecifier = $this->execute(new InvokeSpec($this->units, true));
 
             if (!$resultSpecifier->isSingleResult()) {
                 throw new InvalidResponseException();
@@ -101,8 +146,8 @@ class Client
 
             list($result) = $resultSpecifier->getResults();
 
-            if ($result instanceof ResultUnit) {
-                /** @var ResultUnit $result */
+            if ($result instanceof Result) {
+                /** @var Result $result */
                 return $result->getResult();
             }
 
@@ -122,10 +167,10 @@ class Client
      */
     public function notification(string $method, array $parameters)
     {
-        $this->units[] = new CallNotification($method, $parameters);
+        $this->units[] = new Notification($method, $parameters);
 
         if ($this->isSingleRequest) {
-            $this->execute(new CallSpecifier($this->units, true));
+            $this->execute(new InvokeSpec($this->units, true));
             return null;
         }
 
@@ -150,7 +195,7 @@ class Client
      */
     public function batchExecute()
     {
-        $results = $this->execute(new CallSpecifier($this->units, false))->getResults();
+        $results = $this->execute(new InvokeSpec($this->units, false))->getResults();
 
         // Make right order in sequence of results. It's required operation, because JSON-RPC2
         // specification define: "The Response objects being returned from a batch call MAY be returned
@@ -159,7 +204,7 @@ class Client
 
         $callMap = [];
         foreach ($this->units as $index => $unit) {
-            /** @var CallUnit $unit */
+            /** @var Invoke $unit */
             $callMap[$unit->getRawId()] = $index;
         }
 
@@ -169,11 +214,11 @@ class Client
 
         $resultSequence = [];
         foreach ($results as $result) {
-            if ($result instanceof ResultUnit) {
-                /** @var ResultUnit $result */
+            if ($result instanceof Result) {
+                /** @var Result $result */
                 $resultSequence[ $callMap[$result->getId()] ] = $result->getResult();
-            } elseif ($result instanceof ResultError) {
-                /** @var ResultError $result */
+            } elseif ($result instanceof Error) {
+                /** @var Error $result */
                 $resultSequence[ $callMap[$result->getId()] ] = null;
             }
         }
@@ -183,14 +228,14 @@ class Client
     }
 
     /**
-     * @param CallSpecifier $call
+     * @param InvokeSpec $call
      *
-     * @return ResultSpecifier
+     * @return ResultSpec
      */
-    private function execute(CallSpecifier $call): ResultSpecifier
+    private function execute(InvokeSpec $call): ResultSpec
     {
         $request  = $this->requestBuilder->build($call);
-        $response = $this->engine->request($request);
+        $response = $this->transport->request($request);
 
         return $this->responseParser->parse($response);
     }

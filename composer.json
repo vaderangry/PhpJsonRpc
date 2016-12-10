@@ -1,8 +1,8 @@
 {
   "name": "vaderangry/php-json-rpc",
   "type": "library",
-  "description": "JSON-RPC2 implementation for PHP7",
-  "keywords": ["json-rpc"],
+  "description": "Flexible JSON-RPC2 server/client implementation for PHP7",
+  "keywords": ["json", "rpc", "JSON-RPC2"],
   "homepage": "https://github.com/vaderangry/PhpJsonRpc",
   "license": "MIT",
   "authors": [

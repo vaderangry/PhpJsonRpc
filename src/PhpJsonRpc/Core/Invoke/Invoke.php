@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpJsonRpc\Core\Call;
+namespace PhpJsonRpc\Core\Invoke;
 
-class CallUnit extends AbstractCall
+class Invoke extends AbstractInvoke
 {
     /**
      * @var mixed

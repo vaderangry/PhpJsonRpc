@@ -4,7 +4,7 @@ namespace PhpJsonRpc\Core;
 
 use PhpJsonRpc\Core\Result\AbstractResult;
 
-class ResultSpecifier
+class ResultSpec
 {
     /**
      * @var bool

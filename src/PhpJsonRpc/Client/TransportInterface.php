@@ -13,5 +13,5 @@ interface TransportInterface
      * @param string $request
      * @return string
      */
-    public function request(string $request): string;
+    public function send(string $request): string;
 }

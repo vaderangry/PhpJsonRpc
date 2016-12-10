@@ -1,8 +1,8 @@
 <?php
 
-namespace PhpJsonRpc\Core\Call;
+namespace PhpJsonRpc\Core\Invoke;
 
-class CallNotification extends AbstractCall
+class Notification extends AbstractInvoke
 {
     /**
      * @var string

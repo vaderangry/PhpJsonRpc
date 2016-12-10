@@ -2,9 +2,9 @@
 
 namespace PhpJsonRpc\Core;
 
-use PhpJsonRpc\Core\Call\AbstractCall;
+use PhpJsonRpc\Core\Invoke\AbstractInvoke;
 
-class CallSpecifier
+class InvokeSpec
 {
     /**
      * @var bool
@@ -19,8 +19,8 @@ class CallSpecifier
     /**
      * CallSpecifier constructor.
      *
-     * @param AbstractCall[] $units
-     * @param bool           $singleCall
+     * @param AbstractInvoke[] $units
+     * @param bool             $singleCall
      */
     public function __construct(array $units, bool $singleCall)
     {

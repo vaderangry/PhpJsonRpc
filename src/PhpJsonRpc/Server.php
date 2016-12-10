@@ -2,27 +2,30 @@
 
 namespace PhpJsonRpc;
 
+use PhpJsonRpc\Common\TypeAdapter\TypeAdapter;
 use PhpJsonRpc\Server\Processor;
 use PhpJsonRpc\Server\RequestParser;
+use PhpJsonRpc\Server\RequestProvider;
+use PhpJsonRpc\Server\RequestProviderInterface;
 use PhpJsonRpc\Server\ResponseBuilder;
 use PhpJsonRpc\Server\MapperInterface;
 
 /**
- * Implementation of JSON-RPC2 specification
+ * Implementation of JSON-RPC2 server specification
  *
  * @link http://www.jsonrpc.org/specification 
  */
 class Server
 {
     /**
-     * @var string array
-     */
-    private $payload;
-
-    /**
      * @var Processor
      */
     private $processor;
+
+    /**
+     * @var RequestProviderInterface
+     */
+    private $requestProvider;
 
     /**
      * @var RequestParser
@@ -36,16 +39,62 @@ class Server
 
     /**
      * Server constructor.
-     *
-     * @param string $payload
      */
-    public function __construct(string $payload = null)
+    public function __construct()
     {
-        $this->payload   = $payload ?? file_get_contents('php://input');
         $this->processor = new Processor();
 
+        $this->requestProvider = new RequestProvider();
         $this->requestParser   = new RequestParser();
         $this->responseBuilder = new ResponseBuilder();
+    }
+
+    /**
+     * @return Processor
+     */
+    public function getProcessor(): Processor
+    {
+        return $this->processor;
+    }
+
+    /**
+     * @return RequestProviderInterface
+     */
+    public function getRequestProvider(): RequestProviderInterface
+    {
+        return $this->requestProvider;
+    }
+
+    /**
+     * @param RequestProviderInterface $requestProvider
+     */
+    public function setRequestProvider(RequestProviderInterface $requestProvider)
+    {
+        $this->requestProvider = $requestProvider;
+    }
+
+    /**
+     * @return RequestParser
+     */
+    public function getRequestParser(): RequestParser
+    {
+        return $this->requestParser;
+    }
+
+    /**
+     * @return ResponseBuilder
+     */
+    public function getResponseBuilder(): ResponseBuilder
+    {
+        return $this->responseBuilder;
+    }
+
+    /**
+     * @return TypeAdapter
+     */
+    public function getTypeAdapter(): TypeAdapter
+    {
+        return $this->processor->getInvoker()->getTypeAdapter();
     }
 
     /**
@@ -61,14 +110,14 @@ class Server
     }
 
     /**
-     * Add mapper-object for mapping request-method on class and method
+     * Set mapper-object for mapping request-method on class and method
      *
      * @param MapperInterface $mapper
      * @return $this
      */
-    public function addMapper(MapperInterface $mapper)
+    public function setMapper(MapperInterface $mapper)
     {
-        $this->processor->addMapper($mapper);
+        $this->processor->setMapper($mapper);
         return $this;
     }
 
@@ -79,7 +128,7 @@ class Server
      */
     public function execute(): string
     {
-        $calls  = $this->requestParser->parse($this->payload);
+        $calls  = $this->requestParser->parse($this->requestProvider->getPayload());
         $result = $this->processor->process($calls);
 
         return $this->responseBuilder->build($result);

@@ -2,12 +2,15 @@
 
 namespace PhpJsonRpc\Server;
 
-use PhpJsonRpc\Core\Call\CallUnit;
-use PhpJsonRpc\Core\Call\CallError;
-use PhpJsonRpc\Core\Call\CallNotification;
-use PhpJsonRpc\Core\CallSpecifier;
+use PhpJsonRpc\Common\Interceptor\Interceptor;
+use PhpJsonRpc\Core\Invoke\AbstractInvoke;
+use PhpJsonRpc\Core\Invoke\Invoke;
+use PhpJsonRpc\Core\Invoke\Error;
+use PhpJsonRpc\Core\Invoke\Notification;
+use PhpJsonRpc\Core\InvokeSpec;
 use PhpJsonRpc\Error\InvalidRequestException;
 use PhpJsonRpc\Error\ParseErrorException;
+use PhpJsonRpc\Server\RequestParser\ParserContainer;
 
 /**
  * Request parser
@@ -15,51 +18,83 @@ use PhpJsonRpc\Error\ParseErrorException;
 class RequestParser
 {
     /**
+     * @var Interceptor
+     */
+    private $preParse;
+
+    /**
+     * RequestParser constructor.
+     */
+    public function __construct()
+    {
+        $this->preParse = Interceptor::createBase();
+    }
+
+    /**
      * Parse request data
      *
      * @param string $data
-     * @return CallSpecifier
-     * @throws ParseErrorException
+     *
+     * @return InvokeSpec
      */
-    public function parse(string $data): CallSpecifier
+    public function parse(string $data): InvokeSpec
     {
         $payload = @json_decode($data, true);
 
         if (!is_array($payload)) {
-            return new CallSpecifier([new CallError(new ParseErrorException())], true);
+            return new InvokeSpec([new Error(new ParseErrorException())], true);
         }
 
         $units = [];
 
         // Single request
         if ($this->isSingleRequest($payload)) {
-            if ($this->isValidCall($payload)) {
-                $units[] = new CallUnit($payload['id'], $payload['method'], $payload['params'] ?? []);
-            } elseif ($this->isValidNotification($payload)) {
-                $units[] = new CallNotification($payload['method'], $payload['params']);
-            } else {
-                $units[] = new CallError(new InvalidRequestException());
-            }
-
-            return new CallSpecifier($units, true);
+            $units[] = $this->decodeCall($payload);
+            return new InvokeSpec($units, true);
         }
 
         // Batch request
+        /** @var array $payload */
         foreach ($payload as $record) {
-            if ($this->isValidCall($record)) {
-                $units[] = new CallUnit($record['id'], $record['method'], $record['params'] ?? []);
-            } elseif ($this->isValidNotification($record)) {
-                $units[] = new CallNotification($record['method'], $record['params'] ?? []);
-            } else {
-                $units[] = new CallError(new InvalidRequestException());
-            }
+            $units[] = $this->decodeCall($record);
         }
 
-        return new CallSpecifier($units, false);
+        return new InvokeSpec($units, false);
+    }
+
+    /**
+     * Get pre-parse chain
+     *
+     * @return Interceptor
+     */
+    public function onPreParse(): Interceptor
+    {
+        return $this->preParse;
+    }
+
+    /**
+     * @param $record
+     *
+     * @return AbstractInvoke
+     */
+    private function decodeCall($record): AbstractInvoke
+    {
+        $record = $this->preParse($record);
+
+        if ($this->isValidCall($record)) {
+            $unit = new Invoke($record['id'], $record['method'], $record['params'] ?? []);
+        } elseif ($this->isValidNotification($record)) {
+            $unit = new Notification($record['method'], $record['params']);
+        } else {
+            $unit = new Error(new InvalidRequestException());
+        }
+
+        return $unit;
     }
 
     /**
      * @param array $payload
+     *
      * @return bool
      */
     private function isSingleRequest(array $payload): bool
@@ -69,6 +104,7 @@ class RequestParser
 
     /**
      * @param array $payload
+     *
      * @return bool
      */
     private function isValidCall($payload): bool
@@ -92,6 +128,7 @@ class RequestParser
 
     /**
      * @param array $payload
+     *
      * @return bool
      */
     private function isValidNotification($payload): bool
@@ -111,5 +148,21 @@ class RequestParser
         }
 
         return $headerValid && $methodValid && $paramsValid && $idValid;
+    }
+
+    /**
+     * @param mixed $record
+     *
+     * @return mixed
+     */
+    private function preParse($record)
+    {
+        $container = $this->preParse->handle(new ParserContainer($this, $record));
+
+        if ($container instanceof ParserContainer) {
+            return $container->getValue();
+        }
+
+        throw new \RuntimeException();
     }
 }

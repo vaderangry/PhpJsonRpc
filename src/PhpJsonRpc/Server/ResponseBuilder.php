@@ -2,35 +2,50 @@
 
 namespace PhpJsonRpc\Server;
 
+use PhpJsonRpc\Common\Interceptor\Interceptor;
 use PhpJsonRpc\Core\Result\AbstractResult;
-use PhpJsonRpc\Core\Result\ResultError;
-use PhpJsonRpc\Core\Result\ResultUnit;
-use PhpJsonRpc\Core\ResultSpecifier;
+use PhpJsonRpc\Core\Result\Error;
+use PhpJsonRpc\Core\Result\Result;
+use PhpJsonRpc\Core\ResultSpec;
 use PhpJsonRpc\Error\JsonRpcException;
+use PhpJsonRpc\Server\ResponseBuilder\BuilderContainer;
 
 class ResponseBuilder
 {
     /**
-     * @param ResultSpecifier $result
+     * @var Interceptor
+     */
+    private $preBuild;
+
+    /**
+     * ResponseBuilder constructor.
+     */
+    public function __construct()
+    {
+        $this->preBuild = Interceptor::createBase();
+    }
+
+    /**
+     * @param ResultSpec $result
      *
      * @return string
      */
-    public function build(ResultSpecifier $result): string
+    public function build(ResultSpec $result): string
     {
         $response = [];
         $units = $result->getResults();
 
         foreach ($units as $unit) {
             /** @var AbstractResult $unit */
-            if ($unit instanceof ResultUnit) {
-                /** @var ResultUnit $unit */
+            if ($unit instanceof Result) {
+                /** @var Result $unit */
                 $response[] = [
                     'jsonrpc' => '2.0',
-                    'result' => $unit->getResult(),
+                    'result' => $this->preBuild($unit->getResult()),
                     'id'     => $unit->getId()
                 ];
-            } elseif ($unit instanceof ResultError) {
-                /** @var ResultError $unit */
+            } elseif ($unit instanceof Error) {
+                /** @var Error $unit */
                 $baseException = $unit->getBaseException();
                 $response[] = [
                     'jsonrpc' => '2.0',
@@ -53,6 +68,30 @@ class ResponseBuilder
         }
 
         return json_encode($response);
+    }
+
+    /**
+     * @return Interceptor
+     */
+    public function onPreBuild(): Interceptor
+    {
+        return $this->preBuild;
+    }
+
+    /**
+     * @param mixed $result
+     *
+     * @return mixed
+     */
+    private function preBuild($result)
+    {
+        $container = $this->preBuild->handle(new BuilderContainer($this, $result));
+
+        if ($container instanceof BuilderContainer) {
+            return $container->getValue();
+        }
+
+        throw new \RuntimeException();
     }
 
     /**

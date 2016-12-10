@@ -2,9 +2,12 @@
 
 namespace PhpJsonRpc\Client;
 
-use PhpJsonRpc\Core\Result\ResultError;
-use PhpJsonRpc\Core\Result\ResultUnit;
-use PhpJsonRpc\Core\ResultSpecifier;
+use PhpJsonRpc\Client\ResponseParser\ParserContainer;
+use PhpJsonRpc\Common\Interceptor\Interceptor;
+use PhpJsonRpc\Core\Result\AbstractResult;
+use PhpJsonRpc\Core\Result\Error;
+use PhpJsonRpc\Core\Result\Result;
+use PhpJsonRpc\Core\ResultSpec;
 use PhpJsonRpc\Error\ServerErrorException;
 use PhpJsonRpc\Error\ParseErrorException;
 use PhpJsonRpc\Error\InvalidResponseException;
@@ -12,11 +15,24 @@ use PhpJsonRpc\Error\InvalidResponseException;
 class ResponseParser
 {
     /**
+     * @var Interceptor
+     */
+    private $preParse;
+
+    /**
+     * ResponseParser constructor.
+     */
+    public function __construct()
+    {
+        $this->preParse = Interceptor::createBase();
+    }
+
+    /**
      * @param string $payload
      *
-     * @return ResultSpecifier
+     * @return ResultSpec
      */
-    public function parse(string $payload): ResultSpecifier
+    public function parse(string $payload): ResultSpec
     {
         $data = @json_decode($payload, true);
 
@@ -27,33 +43,49 @@ class ResponseParser
         $units = [];
 
         if ($this->isSingleResponse($data)) {
-            if ($this->isValidResult($data)) {
-                $units[] = new ResultUnit($data['id'], $data['result']);
-            } elseif ($this->isValidError($data)) {
-                $units[] = new ResultError($data['id'], new ServerErrorException());
-            } else {
-                throw new InvalidResponseException();
-            }
-
-            return new ResultSpecifier($units, true);
+            $units[] = $this->decodeResult($data);
+            return new ResultSpec($units, true);
         }
 
         /** @var array $data */
         foreach ($data as $response) {
-            if ($this->isValidResult($response)) {
-                $units[] = new ResultUnit($response['id'], $response['result']);
-            } elseif ($this->isValidError($response)) {
-                $units[] = new ResultError($response['id'], new ServerErrorException($response['error']['message'], $response['error']['code']));
-            } else {
-                throw new InvalidResponseException();
-            }
+            $units[] = $this->decodeResult($response);
         }
 
-        return new ResultSpecifier($units, false);
+        return new ResultSpec($units, false);
+    }
+
+    /**
+     * @return Interceptor
+     */
+    public function onPreParse(): Interceptor
+    {
+        return $this->preParse;
+    }
+
+    /**
+     * @param array $record
+     *
+     * @return AbstractResult
+     */
+    private function decodeResult(array $record): AbstractResult
+    {
+        $record = $this->preParse($record);
+
+        if ($this->isValidResult($record)) {
+            $unit = new Result($record['id'], $record['result']);
+        } elseif ($this->isValidError($record)) {
+            $unit = new Error($record['id'], new ServerErrorException($record['error']['message'], $record['error']['code']));
+        } else {
+            throw new InvalidResponseException();
+        }
+
+        return $unit;
     }
 
     /**
      * @param array $response
+     *
      * @return bool
      */
     private function isSingleResponse(array $response): bool
@@ -63,6 +95,7 @@ class ResponseParser
 
     /**
      * @param array $payload
+     *
      * @return bool
      */
     private function isValidResult($payload): bool
@@ -80,6 +113,7 @@ class ResponseParser
 
     /**
      * @param array $payload
+     *
      * @return bool
      */
     private function isValidError($payload): bool
@@ -95,5 +129,21 @@ class ResponseParser
         $idValid     = array_key_exists('id', $payload);
 
         return $headerValid && $errorValid && $idValid;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    private function preParse(array $data): array
+    {
+        $result = $this->preParse->handle(new ParserContainer($this, $data));
+
+        if ($result instanceof ParserContainer) {
+            return $result->getValue();
+        }
+
+        throw new \RuntimeException();
     }
 }

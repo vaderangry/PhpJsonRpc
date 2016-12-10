@@ -4,7 +4,7 @@ namespace PhpJsonRpc\Client;
 
 use PhpJsonRpc\Error\ConnectionFailureException;
 
-class HttpTransport implements TransportInterface
+class HttpTransport extends AbstractTransport
 {
     /**
      * @var string
@@ -34,19 +34,38 @@ class HttpTransport implements TransportInterface
      */
     public function __construct(string $url, int $timeout = null)
     {
+        parent::__construct();
+
         $this->url     = $url;
         $this->timeout = $timeout ?? 5;
     }
 
-    public function request(string $request): string
+    /**
+     * Send request
+     *
+     * @param string $request
+     *
+     * @return string
+     */
+    public function send(string $request): string
     {
-        $stream = fopen(trim($this->url), 'r', false, $this->buildContext($request));
+        $stream = fopen(trim($this->url), 'rb', false, $this->buildContext($request));
 
         if (!is_resource($stream)) {
             throw new ConnectionFailureException('Unable to establish a connection');
         }
 
-        return @json_decode(stream_get_contents($stream), true);
+        return stream_get_contents($stream);
+    }
+
+    /**
+     * Add headers to any request
+     *
+     * @param array $headers
+     */
+    public function addHeaders(array $headers)
+    {
+        $this->headers = array_merge($this->headers, $headers);
     }
 
     /**

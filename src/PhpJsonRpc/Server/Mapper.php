@@ -2,7 +2,7 @@
 
 namespace PhpJsonRpc\Server;
 
-class GeneralMapper implements MapperInterface
+class Mapper implements MapperInterface
 {
     /**
      * @inheritdoc

@@ -1,16 +1,11 @@
 <?php
 
-namespace PhpJsonRpc\Core\Result;
+namespace PhpJsonRpc\Core\Invoke;
 
 use PhpJsonRpc\Error\JsonRpcException;
 
-class ResultError extends AbstractResult
+class Error extends AbstractInvoke
 {
-    /**
-     * @var mixed
-     */
-    private $id;
-
     /**
      * @var JsonRpcException
      */
@@ -19,21 +14,11 @@ class ResultError extends AbstractResult
     /**
      * ErrorUnit constructor.
      *
-     * @param mixed               $id
      * @param JsonRpcException $baseException
      */
-    public function __construct($id, JsonRpcException $baseException)
+    public function __construct(JsonRpcException $baseException)
     {
-        $this->id            = $id;
         $this->baseException = $baseException;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
