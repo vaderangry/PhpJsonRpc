@@ -8,10 +8,10 @@ Flexible [JSON-RPC2](http://www.jsonrpc.org/specification) server/client impleme
 ## Features
 
  - JSON-RPC 2.0 full conformance (batch requests, notification, positional and named arguments, etc)​.
- - Fast start with default routing based on php namespaces.
+ - Quick-start with default routing based on php namespaces.
  - Flexible custom routing for your requirements.
- - Tool for chain handle requests and responses based on *Chain of Responsibility* pattern.
- - Type casting based on pattern matching.
+ - The mechanism of intercepting requests and responses through handlers.
+ - Automatic casting types in requests and responses.
  - Fully unit tested.
 
 ## Installation
@@ -24,11 +24,16 @@ $ composer require vaderangry/php-json-rpc
 
 This command requires you to have Composer installed globally, as explained in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
+## Documentation
+
+ - [Server usage](doc/01-server-usage.md)
+ - [Client usage](doc/02-client-usage.md)
+
 ## Basic usage
 
 ### Server
 
-Example with fast start:
+The example of quick-start:
 ```php
 <?php
 
@@ -62,7 +67,7 @@ Method `Math::pow` by default will mapped to method `Math.pow` in JSON-RPC2 term
 }
 ```
 
-Example with custom method mapping:
+The example of custom method mapping:
 
 ```php
 <?php
@@ -138,7 +143,7 @@ $result = $client->batch()
 ```
 All unit of result stored at the same position of call. Server error present `null` object.
 
-Example with custom headers:
+The example with personal custom headers in request:
 ```php
 <?php
 
@@ -164,11 +169,6 @@ $client->getTransport()->onPreRequest()
     
 $result = $client->call('Math.pow', [2, 3]); // $result = 8
 ```
-
-## Documentation
-
- - [Server usage](doc/01-server-usage.md)
- - [Client usage](doc/02-client-usage.md)
 
 ## Tests
 
