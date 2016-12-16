@@ -325,6 +325,17 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                     '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.Math.pow", "params": [7,3]}' .
                 ']',
                 ''
+            ],
+            // #15 Rpc call with skipping default arguments
+            [
+                '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.UserRepository.getList", "params": {"limit": 20}, "id": 150}',
+                '{"jsonrpc":"2.0","result":[' .
+                    '{"id":1,"email":"vader@@empire.com","name":"vader"},' .
+                    '{"id":2,"email":"yoda@empire.com","name":"yoda"},' .
+                    '{"id":3,"email":"obiwan@empire.com","name":"obiwan"},' .
+                    '{"id":4,"email":"bobafett@empire.com","name":"bobafett"},' .
+                    '{"id":5,"email":"amidala@empire.com","name":"amidala"}' .
+                '],"id":150}'
             ]
         ];
     }

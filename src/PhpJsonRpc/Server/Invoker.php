@@ -82,6 +82,7 @@ class Invoker
 
                 if ($formalParameter->isOptional()) {
                     if (!array_key_exists($name, $parameters)) {
+                        $result[$name] = $formalParameter->getDefaultValue();
                         continue;
                     }
 

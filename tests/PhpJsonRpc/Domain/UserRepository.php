@@ -9,7 +9,7 @@ class UserRepository
         return new User($id, 'unknown@empire.com', 'unknown');
     }
 
-    public function getList()
+    public function getList(array $where = [], int $limit = 0, int $offset = 10)
     {
         return [
             new User(1, 'vader@@empire.com', 'vader'),
