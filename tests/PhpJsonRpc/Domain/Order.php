@@ -25,6 +25,11 @@ class Order
     private $customerId;
 
     /**
+     * @var \DateTime
+     */
+    private $createdAt;
+
+    /**
      * Order constructor.
      *
      * @param int    $id
@@ -38,6 +43,7 @@ class Order
         $this->title       = $title;
         $this->description = $description;
         $this->customerId  = $customerId;
+        $this->createdAt   = new \DateTime('2020-01-01T00:00:00+0300');
     }
 
     /**
@@ -70,5 +76,13 @@ class Order
     public function getCustomerId(): int
     {
         return $this->customerId;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

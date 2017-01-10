@@ -107,7 +107,10 @@ class TypeAdapter
         foreach ($rule->getMap() as $property => $key) {
             $reflectionProperty = $reflectionObject->getProperty($property);
             $reflectionProperty->setAccessible(true);
-            $reflectionProperty->setValue($object, $data[$key]);
+
+            $constructor = $rule->getConstructor($property);
+
+            $reflectionProperty->setValue($object, is_callable($constructor) ? $constructor($data[$key]) : $data[$key]);
         }
 
         return $object;
@@ -128,7 +131,12 @@ class TypeAdapter
         foreach ($rule->getMap() as $property => $key) {
             $reflectionProperty = $reflectionObject->getProperty($property);
             $reflectionProperty->setAccessible(true);
-            $result[$key] = $reflectionProperty->getValue($object);
+
+            $serializer = $rule->getSerializer($property);
+
+            $result[$key] = is_callable($serializer)
+                ? $serializer($reflectionProperty->getValue($object))
+                : $reflectionProperty->getValue($object);
         }
 
         return $result;

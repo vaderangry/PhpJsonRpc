@@ -37,19 +37,27 @@ class TypeAdapterTest extends \PHPUnit_Framework_TestCase
         $caster = new TypeAdapter();
 
         $caster->register(
-            Rule::create(User::class)
-                ->assign('name', 'x')
-                ->assign('email', 'y')
-                ->assign('id', 'z')
+            Rule::createDefault(Order::class)
+                ->assignConstructor('createdAt', 'createdAt', function (string $createdAt): \DateTime {
+                    return \DateTime::createFromFormat(\DateTime::ISO8601, $createdAt);
+                })
         );
 
-        $result = $caster->toObject(['x' => 'vader', 'y' => 'vader@angry.com', 'z' => '8']);
+        $result = $caster->toObject([
+            'id'          => 1,
+            'title'       => 'Test title',
+            'description' => 'Test description',
+            'customerId'  => 8,
+            'createdAt'   => '2020-01-01T00:00:00+0300'
+        ]);
 
-        /** @var User $result */
-        $this->assertInstanceOf(User::class, $result);
-        $this->assertEquals('8', $result->id);
-        $this->assertEquals('vader@angry.com', $result->email);
-        $this->assertEquals('vader', $result->name);
+        /** @var Order $result */
+        $this->assertInstanceOf(Order::class, $result);
+
+        $this->assertEquals(1, $result->getId());
+        $this->assertEquals('Test title', $result->getTitle());
+        $this->assertInstanceOf(\DateTime::class, $result->getCreatedAt());
+        $this->assertEquals('2020-01-01T00:00:00+0300', $result->getCreatedAt()->format(\DateTime::ISO8601));
     }
 
     public function testSingleCastToArrayError()
@@ -86,6 +94,9 @@ class TypeAdapterTest extends \PHPUnit_Framework_TestCase
         $caster->register(
             Rule::createDefault(Order::class) // Create default configuration
                 ->assign('id', 'number')      // Rewrite one pair of default configuration
+                ->assignSerializer('createdAt', 'createdAt', function (\DateTime $createdAt): string {
+                    return $createdAt->format(\DateTime::ISO8601);
+                })
         );
 
         $result = $caster->toArray(new User('8', 'vader@angry.com', 'vader'));
@@ -95,7 +106,13 @@ class TypeAdapterTest extends \PHPUnit_Framework_TestCase
 
         $result = $caster->toArray(new Order(1, 'Test title', 'Test description', 8));
 
-        $this->assertCount(4, $result);
-        $this->assertArraySubset(['number' => 1, 'title' => 'Test title', 'description' => 'Test description', 'customerId' => 8], $result);
+        $this->assertCount(5, $result);
+        $this->assertArraySubset([
+            'number'      => 1,
+            'title'       => 'Test title',
+            'description' => 'Test description',
+            'customerId'  => 8,
+            'createdAt'   => '2020-01-01T00:00:00+0300'
+        ], $result);
     }
 }

@@ -24,6 +24,16 @@ class Rule
     private $reflectedMap = [];
 
     /**
+     * @var array
+     */
+    private $constructors = [];
+
+    /**
+     * @var array
+     */
+    private $serializers = [];
+
+    /**
      * Rule constructor.
      *
      * @param string $class
@@ -68,17 +78,50 @@ class Rule
     }
 
     /**
-     * Add property-key pair
+     * Simple property-key pair assigning
      *
-     * @param string $property
-     * @param string $key
+     * @param string $property Object property
+     * @param string $key      Map key
      *
      * @return $this
      */
     public function assign(string $property, string $key)
     {
-        $this->map[$property] = $key;
-        $this->reflectedMap[$key] = $property;
+        $this->doAssign($property, $key);
+
+        return $this;
+    }
+
+    /**
+     * Assign property constructor
+     *
+     * @param string   $property
+     * @param string   $key
+     * @param callable $fx
+     *
+     * @return $this
+     */
+    public function assignConstructor(string $property, string $key, callable $fx)
+    {
+        $this->doAssign($property, $key);
+        $this->constructors[$property] = $fx;
+
+        return $this;
+    }
+
+    /**
+     * Assign property serializer
+     *
+     * @param string   $property
+     * @param string   $key
+     * @param callable $fx
+     *
+     * @return $this
+     */
+    public function assignSerializer(string $property, string $key, callable $fx)
+    {
+        $this->doAssign($property, $key);
+        $this->serializers[$property] = $fx;
 
         return $this;
     }
@@ -105,5 +148,35 @@ class Rule
     public function getReflectedMap(): array
     {
         return $this->reflectedMap;
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return callable|null
+     */
+    public function getConstructor(string $property)
+    {
+        return $this->constructors[$property] ?? null;
+    }
+
+    /**
+     * @param string $property
+     *
+     * @return callable|null
+     */
+    public function getSerializer(string $property)
+    {
+        return $this->serializers[$property] ?? null;
+    }
+
+    /**
+     * @param string $property
+     * @param string $key
+     */
+    private function doAssign(string $property, string $key)
+    {
+        $this->map[$property] = $key;
+        $this->reflectedMap[$key] = $property;
     }
 }
