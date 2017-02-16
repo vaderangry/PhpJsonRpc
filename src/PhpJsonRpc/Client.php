@@ -145,6 +145,7 @@ class Client
             }
 
             list($result) = $resultSpecifier->getResults();
+            $this->units = [];
 
             if ($result instanceof Result) {
                 /** @var Result $result */
@@ -223,6 +224,7 @@ class Client
             }
         }
         ksort($resultSequence);
+        $this->units = [];
 
         return $resultSequence;
     }
