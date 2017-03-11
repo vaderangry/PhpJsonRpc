@@ -33,8 +33,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->setIdGenerator(new IdGenerator());
 
         $result = $client->call('Math.pow', [2, 3]);
-
         $this->assertEquals(8, $result);
+
+        $client->setIdGenerator(new IdGenerator());
+        $result = $client->call('Math.pow', [2, 4]);
+        $this->assertEquals(16, $result);
     }
 
     /**

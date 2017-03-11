@@ -135,6 +135,10 @@ class Client
      */
     public function call(string $method, array $parameters)
     {
+        if ($this->isSingleRequest) {
+            $this->units = [];
+        }
+
         $this->units[] = new Invoke($this->generatorId->get(), $method, $parameters);
 
         if ($this->isSingleRequest) {
@@ -145,7 +149,6 @@ class Client
             }
 
             list($result) = $resultSpecifier->getResults();
-            $this->units = [];
 
             if ($result instanceof Result) {
                 /** @var Result $result */
@@ -168,6 +171,10 @@ class Client
      */
     public function notification(string $method, array $parameters)
     {
+        if ($this->isSingleRequest) {
+            $this->units = [];
+        }
+
         $this->units[] = new Notification($method, $parameters);
 
         if ($this->isSingleRequest) {
@@ -186,6 +193,7 @@ class Client
     public function batch()
     {
         $this->isSingleRequest = false;
+        $this->units = [];
         return $this;
     }
 
