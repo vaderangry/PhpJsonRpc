@@ -19,12 +19,7 @@ class HttpTransport extends AbstractTransport
     /**
      * @var array
      */
-    private $headers = [
-        'User-Agent: PhpJsonRpc client <https://github.com/vaderangry/PhpJsonRpc>',
-        'Content-Type: application/json',
-        'Accept: application/json',
-        'Connection: close',
-    ];
+    private $headers;
 
     /**
      * HttpEngine constructor.
@@ -36,6 +31,7 @@ class HttpTransport extends AbstractTransport
     {
         parent::__construct();
 
+        $this->headers = $this->getDefaultHeaders();
         $this->url     = $url;
         $this->timeout = $timeout ?? 5;
     }
@@ -54,6 +50,8 @@ class HttpTransport extends AbstractTransport
         if (!is_resource($stream)) {
             throw new ConnectionFailureException('Unable to establish a connection');
         }
+
+        $this->headers = $this->getDefaultHeaders();
 
         return stream_get_contents($stream);
     }
@@ -86,5 +84,15 @@ class HttpTransport extends AbstractTransport
             )
         );
         return stream_context_create($options);
+    }
+
+    private function getDefaultHeaders(): array
+    {
+        return [
+            'User-Agent: PhpJsonRpc client <https://github.com/vaderangry/PhpJsonRpc>',
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'Connection: close',
+        ];
     }
 }
