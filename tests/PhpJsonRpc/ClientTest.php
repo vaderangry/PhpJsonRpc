@@ -12,6 +12,7 @@ use PhpJsonRpc\Client\ResponseParser\ParserContainer;
 use PhpJsonRpc\Client\Transport\TransportContainer;
 use PhpJsonRpc\Common\Interceptor\Interceptor;
 use PhpJsonRpc\Core\Invoke\Invoke;
+use PhpJsonRpc\Error\BaseClientException;
 use PhpJsonRpc\Error\InvalidResponseException;
 use PhpJsonRpc\Error\ParseErrorException;
 use PhpJsonRpc\Tests\Mock\IdGenerator;
@@ -62,7 +63,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->setTransport(new Transport());
         $client->setIdGenerator(new IdGenerator());
 
-        $this->expectException(ParseErrorException::class);
+        $this->expectException(BaseClientException::class);
 
         $client->call('Test.parseError', []);
     }

@@ -8,8 +8,9 @@ use PhpJsonRpc\Core\Result\AbstractResult;
 use PhpJsonRpc\Core\Result\Error;
 use PhpJsonRpc\Core\Result\Result;
 use PhpJsonRpc\Core\ResultSpec;
+use PhpJsonRpc\Error\BaseClientException;
+use PhpJsonRpc\Error\JsonRpcException;
 use PhpJsonRpc\Error\ServerErrorException;
-use PhpJsonRpc\Error\ParseErrorException;
 use PhpJsonRpc\Error\InvalidResponseException;
 
 class ResponseParser
@@ -37,7 +38,7 @@ class ResponseParser
         $data = @json_decode($payload, true);
 
         if (!is_array($data)) {
-            throw new ParseErrorException();
+            throw new BaseClientException('Parse error', JsonRpcException::PARSE_ERROR);
         }
 
         $units = [];
