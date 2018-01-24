@@ -14,7 +14,7 @@ use PhpJsonRpc\Common\Interceptor\Interceptor;
 use PhpJsonRpc\Core\Invoke\Invoke;
 use PhpJsonRpc\Error\BaseClientException;
 use PhpJsonRpc\Error\InvalidResponseException;
-use PhpJsonRpc\Error\ParseErrorException;
+use PhpJsonRpc\Error\MethodNotFoundException;
 use PhpJsonRpc\Tests\Mock\IdGenerator;
 use PhpJsonRpc\Tests\Mock\Transport;
 
@@ -50,8 +50,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client->setTransport(new Transport());
         $client->setIdGenerator(new IdGenerator());
 
-        $result = $client->call('Test.serverError', []);
-        $this->assertNull($result);
+        $this->expectException(MethodNotFoundException::class);
+
+        $client->call('Test.serverError', []);
     }
 
     /**

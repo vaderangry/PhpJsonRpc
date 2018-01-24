@@ -16,6 +16,7 @@ use PhpJsonRpc\Core\Invoke\Invoke;
 use PhpJsonRpc\Core\InvokeSpec;
 use PhpJsonRpc\Core\Result\Result;
 use PhpJsonRpc\Core\ResultSpec;
+use PhpJsonRpc\Error\JsonRpcException;
 
 /**
  * Implementation of JSON-RPC2 client specification
@@ -132,6 +133,7 @@ class Client
      * @param array  $parameters
      *
      * @return $this|mixed
+     * @throws JsonRpcException
      */
     public function call(string $method, array $parameters)
     {
@@ -153,6 +155,9 @@ class Client
             if ($result instanceof Result) {
                 /** @var Result $result */
                 return $result->getResult();
+            } elseif ($result instanceof Error) {
+                /** @var Error $result */
+                throw $result->getBaseException();
             }
 
             return null;
