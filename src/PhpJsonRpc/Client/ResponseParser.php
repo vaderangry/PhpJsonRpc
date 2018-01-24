@@ -10,6 +10,10 @@ use PhpJsonRpc\Core\Result\Result;
 use PhpJsonRpc\Core\ResultSpec;
 use PhpJsonRpc\Error\BaseClientException;
 use PhpJsonRpc\Error\JsonRpcException;
+use PhpJsonRpc\Error\InvalidParamsException;
+use PhpJsonRpc\Error\InvalidRequestException;
+use PhpJsonRpc\Error\MethodNotFoundException;
+use PhpJsonRpc\Error\ParseErrorException;
 use PhpJsonRpc\Error\ServerErrorException;
 use PhpJsonRpc\Error\InvalidResponseException;
 
@@ -19,6 +23,16 @@ class ResponseParser
      * @var Interceptor
      */
     private $preParse;
+
+    /**
+     * @var array
+     */
+    private $exceptionMap = [
+        JsonRpcException::PARSE_ERROR      => ParseErrorException::class,
+        JsonRpcException::INVALID_REQUEST  => InvalidRequestException::class,
+        JsonRpcException::METHOD_NOT_FOUND => MethodNotFoundException::class,
+        JsonRpcException::INVALID_PARAMS   => InvalidParamsException::class
+    ];
 
     /**
      * ResponseParser constructor.
@@ -76,7 +90,11 @@ class ResponseParser
         if ($this->isValidResult($record)) {
             $unit = new Result($record['id'], $record['result']);
         } elseif ($this->isValidError($record)) {
-            $unit = new Error($record['id'], new ServerErrorException($record['error']['message'], $record['error']['code']));
+            $exceptionClass = $this->exceptionMap[$record['error']['code']] ?? ServerErrorException::class;
+            $unit = new Error($record['id'], new $exceptionClass(
+                $record['error']['data']['message'] ?? $record['error']['message'] ?? 'Server error',
+                $record['error']['data']['code'] ?? 0
+            ));
         } else {
             throw new InvalidResponseException();
         }

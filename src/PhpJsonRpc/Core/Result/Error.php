@@ -19,7 +19,7 @@ class Error extends AbstractResult
     /**
      * ErrorUnit constructor.
      *
-     * @param mixed               $id
+     * @param mixed            $id
      * @param JsonRpcException $baseException
      */
     public function __construct($id, JsonRpcException $baseException)

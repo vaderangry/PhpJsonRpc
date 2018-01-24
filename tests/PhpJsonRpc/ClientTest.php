@@ -14,7 +14,7 @@ use PhpJsonRpc\Common\Interceptor\Interceptor;
 use PhpJsonRpc\Core\Invoke\Invoke;
 use PhpJsonRpc\Error\BaseClientException;
 use PhpJsonRpc\Error\InvalidResponseException;
-use PhpJsonRpc\Error\ParseErrorException;
+use PhpJsonRpc\Error\MethodNotFoundException;
 use PhpJsonRpc\Tests\Mock\IdGenerator;
 use PhpJsonRpc\Tests\Mock\Transport;
 
@@ -52,6 +52,20 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $result = $client->call('Test.serverError', []);
         $this->assertNull($result);
+    }
+
+    /**
+     * Testing single call with server error and exception error mode
+     */
+    public function testSingleServerErrorException()
+    {
+        $client = new Client('http://localhost', Client::ERRMODE_EXCEPTION);
+        $client->setTransport(new Transport());
+        $client->setIdGenerator(new IdGenerator());
+
+        $this->expectException(MethodNotFoundException::class);
+
+        $client->call('Test.serverError', []);
     }
 
     /**
@@ -129,6 +143,30 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(512, $numeric);
         $this->assertNull($unknownMethod);
+        $this->assertEquals('leo', $name);
+    }
+
+    /**
+     * Testing batch call with server error and exception error mode
+     */
+    public function testBatchServerErrorException()
+    {
+        $client = new Client('http://localhost', Client::ERRMODE_EXCEPTION);
+        $client->setTransport(new Transport());
+        $client->setIdGenerator(new IdGenerator());
+
+        $result = $client->batch()
+            ->call('Math.pow', [2, 9])
+            ->call('User.unknownMethod', [])
+            ->call('User.getName', ['id' => 9])
+            ->batchExecute();
+
+        $this->assertCount(3, $result);
+
+        list($numeric, $unknownMethod, $name) = $result;
+
+        $this->assertEquals(512, $numeric);
+        $this->assertTrue($unknownMethod instanceof MethodNotFoundException);
         $this->assertEquals('leo', $name);
     }
 
