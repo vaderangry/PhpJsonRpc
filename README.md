@@ -124,6 +124,17 @@ use PhpJsonRpc\Client;
 
 $client = new Client('http://localhost');
 $result = $client->call('Math.pow', [2, 3]); // $result = 8
+$result = $client->call('Math.methodNotFound', []); // $result = null
+```
+
+Single request with exception server error mode:
+```php
+<?php
+
+use PhpJsonRpc\Client;
+
+$client = new Client('http://localhost', Client::ERRMODE_EXCEPTION);
+$result = $client->call('Math.methodNotFound', []); // throw MethodNotFoundException
 ```
 
 Batch request:
@@ -138,10 +149,28 @@ $result = $client->batch()
     ->call('Util.Math.pow', [2, 1])
     ->call('Util.Math.pow', [2, 2])
     ->call('Util.Math.pow', [2, 3])
+    ->call('Util.methodNotFound', [])
     ->batchExecute();
-// $result = [2, 4, 8]
+// $result = [2, 4, 8, null]
 ```
 All unit of result stored at the same position of call. Server error present `null` object.
+
+Batch request with exception server error mode:
+```php
+<?php
+
+use PhpJsonRpc\Client;
+
+$client = new Client('http://localhost', Client::ERRMODE_EXCEPTION);
+
+$result = $client->batch()
+    ->call('Util.Math.pow', [2, 1])
+    ->call('Util.methodNotFound', [])
+    ->batchExecute();
+// $result = [2, MethodNotFoundException]
+```
+With exception mode server error present `JsonRpcException` object.
+Exception will not throw for saving other units of result.
 
 The example with personal custom headers in request:
 ```php
