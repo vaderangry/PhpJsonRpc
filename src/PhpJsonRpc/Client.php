@@ -26,6 +26,16 @@ use PhpJsonRpc\Error\JsonRpcException;
 class Client
 {
     /**
+     * Client will return null if server error happened
+     */
+    const ERRMODE_SILENT    = 0;
+
+    /**
+     * Client will throw exception if server error happened
+     */
+    const ERRMODE_EXCEPTION = 2;
+
+    /**
      * @var AbstractInvoke[]
      */
     private $units = [];
@@ -56,16 +66,23 @@ class Client
     private $generatorId;
 
     /**
+     * @var int
+     */
+    private $serverErrorMode;
+
+    /**
      * Client constructor.
      *
      * @param string $url
+     * @param int    $serverErrorMode
      */
-    public function __construct(string $url)
+    public function __construct(string $url, int $serverErrorMode = self::ERRMODE_SILENT)
     {
-        $this->requestBuilder = new RequestBuilder();
-        $this->transport      = new HttpTransport($url);
-        $this->responseParser = new ResponseParser();
-        $this->generatorId    = new IdGenerator();
+        $this->requestBuilder  = new RequestBuilder();
+        $this->transport       = new HttpTransport($url);
+        $this->responseParser  = new ResponseParser();
+        $this->generatorId     = new IdGenerator();
+        $this->serverErrorMode = $serverErrorMode;
     }
 
     /**
@@ -157,7 +174,9 @@ class Client
                 return $result->getResult();
             } elseif ($result instanceof Error) {
                 /** @var Error $result */
-                throw $result->getBaseException();
+                if ($this->serverErrorMode === self::ERRMODE_EXCEPTION) {
+                    throw $result->getBaseException();
+                }
             }
 
             return null;
@@ -233,7 +252,7 @@ class Client
                 $resultSequence[ $callMap[$result->getId()] ] = $result->getResult();
             } elseif ($result instanceof Error) {
                 /** @var Error $result */
-                $resultSequence[ $callMap[$result->getId()] ] = null;
+                $resultSequence[ $callMap[$result->getId()] ] = $this->serverErrorMode === self::ERRMODE_EXCEPTION ? $result->getBaseException() : null;
             }
         }
         ksort($resultSequence);
