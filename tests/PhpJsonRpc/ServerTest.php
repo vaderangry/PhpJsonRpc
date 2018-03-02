@@ -241,6 +241,11 @@ class ServerTest extends \PHPUnit_Framework_TestCase
                 '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.Math.add", "params": {"lhs": 2, "rhs": 16}, "id": 10}',
                 '{"jsonrpc":"2.0","result":18,"id":10}'
             ],
+            // #1.1 Rpc call with named parameters
+            [
+                '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.Math.add", "params": {"lhs": 2, "rhs": null}, "id": 10}',
+                '{"jsonrpc":"2.0","result":2,"id":10}'
+            ],
             // #2
             [
                 '{"jsonrpc": "2.0", "method": "PhpJsonRpc.Tests.Math.multiply", "params": {"lhs": 2, "rhs": 2}, "id": 20}',
