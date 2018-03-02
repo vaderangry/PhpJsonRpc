@@ -10,9 +10,9 @@ class Math
      *
      * @return int
      */
-    public function add(int $lhs, int $rhs): int
+    public function add(int $lhs, int $rhs = null): int
     {
-        return $lhs + $rhs;
+        return $lhs + $rhs ?: 0;
     }
 
     /**
@@ -21,7 +21,7 @@ class Math
      *
      * @return int
      */
-    public function multiply($lhs, $rhs = 1)
+    public function multiply(int $lhs, int $rhs = 1)
     {
         return $lhs * $rhs;
     }

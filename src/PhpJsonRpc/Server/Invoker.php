@@ -86,6 +86,11 @@ class Invoker
                         continue;
                     }
 
+                    if ($formalParameter->allowsNull() && $parameters[$name] === null) {
+                        $result[$name] = $parameters[$name];
+                        continue;
+                    }
+
                     $result[$name] = $formalParameter->getClass() !== null
                         ? $this->toObject($formalParameter->getClass()->name, $parameters[$name])
                         : $this->matchType($formalType, $parameters[$name]);
